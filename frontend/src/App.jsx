@@ -10,6 +10,7 @@ import AdminLoginPage from './components/pages/admin/AdminLoginPage';
 import AdminDashboardPage from './components/pages/admin/AdminDashboardPage';
 import AdminOrdersPage from './components/pages/admin/AdminOrdersPage';
 import AdminCocktailsPage from './components/pages/admin/AdminCocktailsPage';
+import AdminUsersPage from './components/pages/admin/AdminUsersPage';
 
 function App() {
   return (
@@ -40,6 +41,14 @@ function App() {
             <Route index element={<AdminDashboardPage />} />
             <Route path="orders" element={<AdminOrdersPage />} />
             <Route path="cocktails" element={<AdminCocktailsPage />} />
+            <Route
+              path="users"
+              element={
+                <PrivateRoute roles={['admin']} redirectTo="/admin">
+                  <AdminUsersPage />
+                </PrivateRoute>
+              }
+            />
           </Route>
 
           <Route path="*" element={<Navigate to="/" replace />} />
