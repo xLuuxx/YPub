@@ -2,8 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import api from '../../lib/api';
-import Header from '../layout/Header';
-import Footer from '../layout/Footer';
+import ypubLogo from '../../assets/ypub.webp';
 
 function RegisterPage() {
   const navigate = useNavigate();
@@ -24,11 +23,7 @@ function RegisterPage() {
   async function handleSubmit(e) {
     e.preventDefault();
     setError('');
-
-    if (form.password !== form.confirm) {
-      return setError('Les mots de passe ne correspondent pas');
-    }
-
+    if (form.password !== form.confirm) return setError('Les mots de passe ne correspondent pas');
     setLoading(true);
     try {
       const { data } = await api.post('/api/auth/register', {
@@ -38,39 +33,67 @@ function RegisterPage() {
       login(data.token, data.user);
       navigate('/', { replace: true });
     } catch (err) {
-      setError(err.response?.data?.error || 'Erreur lors de l\'inscription');
+      setError(err.response?.data?.error || "Erreur lors de l'inscription");
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <div className="min-h-screen bg-white text-zinc-950">
-      <Header />
+    <div className="min-h-screen bg-zinc-950 text-white lg:grid lg:grid-cols-2">
 
-      <main className="mx-auto flex min-h-[calc(100vh-8rem)] max-w-7xl items-center justify-center px-4 py-10">
-        <div className="w-full max-w-md">
-          <p className="text-xs font-bold uppercase tracking-[0.25em] text-violet-700">
-            Nouveau compte
+      <div className="relative hidden lg:flex lg:flex-col lg:justify-between lg:border-r lg:border-white/5 lg:p-14">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_20%_60%,rgba(124,58,237,0.18),transparent_65%)]" />
+
+        <Link to="/" className="relative z-10">
+          <img src={ypubLogo} alt="Y'Pub" className="h-12 w-auto object-contain" />
+        </Link>
+
+        <div className="relative z-10">
+          <p className="text-6xl font-black leading-none tracking-tighter text-white">
+            Nouvelle<br />table.
           </p>
-          <h1 className="mt-3 text-3xl font-black tracking-tight">Inscription</h1>
+          <p className="mt-4 max-w-xs text-lg leading-relaxed text-zinc-400">
+            Créez votre compte et commencez à commander depuis votre table.
+          </p>
+        </div>
 
-          <form onSubmit={handleSubmit} className="mt-8 space-y-4">
+        <p className="relative z-10 text-xs text-zinc-600">Y'Pub &copy; 2025</p>
+      </div>
+
+      <div className="flex min-h-screen items-center justify-center px-6 py-16 lg:min-h-0 lg:px-14">
+        <div className="w-full max-w-sm">
+          <Link to="/" className="mb-10 block lg:hidden">
+            <img src={ypubLogo} alt="Y'Pub" className="h-10 w-auto object-contain" />
+          </Link>
+
+          <p className="text-xs font-bold uppercase tracking-[0.3em] text-violet-400">
+            Inscription
+          </p>
+          <h1 className="mt-3 text-3xl font-black tracking-tight">
+            Créer un compte.
+          </h1>
+
+          <form onSubmit={handleSubmit} className="mt-10 space-y-5">
             <label className="block">
-              <span className="mb-2 block text-sm font-semibold">Identifiant</span>
+              <span className="mb-2 block text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                Identifiant
+              </span>
               <input
                 name="identifier"
                 value={form.identifier}
                 onChange={handleChange}
                 autoComplete="username"
                 required
-                className="min-h-12 w-full rounded-2xl border border-zinc-300 bg-white px-4 text-sm outline-none focus:border-violet-500 focus:ring-4 focus:ring-violet-100"
+                className="min-h-12 w-full rounded-xl border border-white/10 bg-white/5 px-4 text-sm text-white outline-none transition focus:border-violet-500"
                 placeholder="8 à 12 caractères alphanumériques"
               />
             </label>
 
             <label className="block">
-              <span className="mb-2 block text-sm font-semibold">Mot de passe</span>
+              <span className="mb-2 block text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                Mot de passe
+              </span>
               <input
                 name="password"
                 type="password"
@@ -78,13 +101,15 @@ function RegisterPage() {
                 onChange={handleChange}
                 autoComplete="new-password"
                 required
-                className="min-h-12 w-full rounded-2xl border border-zinc-300 bg-white px-4 text-sm outline-none focus:border-violet-500 focus:ring-4 focus:ring-violet-100"
-                placeholder="12+ caractères, 1 maj, 1 chiffre, 1 spécial"
+                className="min-h-12 w-full rounded-xl border border-white/10 bg-white/5 px-4 text-sm text-white outline-none transition focus:border-violet-500"
+                placeholder="12+ car. — 1 maj, 1 chiffre, 1 spécial"
               />
             </label>
 
             <label className="block">
-              <span className="mb-2 block text-sm font-semibold">Confirmer le mot de passe</span>
+              <span className="mb-2 block text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                Confirmer
+              </span>
               <input
                 name="confirm"
                 type="password"
@@ -92,35 +117,31 @@ function RegisterPage() {
                 onChange={handleChange}
                 autoComplete="new-password"
                 required
-                className="min-h-12 w-full rounded-2xl border border-zinc-300 bg-white px-4 text-sm outline-none focus:border-violet-500 focus:ring-4 focus:ring-violet-100"
+                className="min-h-12 w-full rounded-xl border border-white/10 bg-white/5 px-4 text-sm text-white outline-none transition focus:border-violet-500"
                 placeholder="••••••••••••"
               />
             </label>
 
             {error && (
-              <p role="alert" className="rounded-2xl bg-rose-50 px-4 py-3 text-sm text-rose-700">
-                {error}
-              </p>
+              <p role="alert" className="text-sm text-rose-400">{error}</p>
             )}
 
             <button
               disabled={loading}
-              className="inline-flex min-h-12 w-full items-center justify-center rounded-2xl bg-violet-700 px-5 py-3 text-sm font-semibold text-white transition hover:bg-violet-800 disabled:opacity-60"
+              className="mt-2 inline-flex min-h-12 w-full items-center justify-center rounded-xl bg-violet-600 px-5 text-sm font-semibold text-white transition hover:bg-violet-500 disabled:opacity-50"
             >
-              {loading ? 'Inscription…' : 'Créer mon compte'}
+              {loading ? 'Création…' : 'Créer mon compte'}
             </button>
           </form>
 
-          <p className="mt-6 text-center text-sm text-zinc-500">
+          <p className="mt-8 text-sm text-zinc-500">
             Déjà un compte ?{' '}
-            <Link to="/login" className="font-semibold text-violet-700 hover:underline">
+            <Link to="/login" className="text-violet-400 hover:text-violet-300">
               Se connecter
             </Link>
           </p>
         </div>
-      </main>
-
-      <Footer />
+      </div>
     </div>
   );
 }

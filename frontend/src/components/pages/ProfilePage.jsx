@@ -5,20 +5,26 @@ import api from '../../lib/api';
 import Header from '../layout/Header';
 import Footer from '../layout/Footer';
 
-const STATUS_LABELS = {
-  pending: 'Reçue',
-  preparing: 'En préparation',
-  served: 'Servie',
-};
-
+const STATUS_LABELS = { pending: 'Reçue', preparing: 'En préparation', served: 'Servie' };
 const STATUS_COLORS = {
-  pending: 'bg-amber-500/15 text-amber-700',
-  preparing: 'bg-violet-500/15 text-violet-700',
-  served: 'bg-emerald-500/15 text-emerald-700',
+  pending: 'text-amber-400',
+  preparing: 'text-violet-400',
+  served: 'text-emerald-400',
+};
+const STATUS_DOT = {
+  pending: 'bg-amber-400',
+  preparing: 'bg-violet-400 animate-pulse',
+  served: 'bg-emerald-400',
 };
 
 function formatOrderId(id) {
   return `CMD-${String(id).padStart(4, '0')}`;
+}
+
+function formatDate(iso) {
+  return new Date(iso).toLocaleDateString('fr-FR', {
+    day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit',
+  });
 }
 
 function ProfilePage() {
@@ -41,97 +47,121 @@ function ProfilePage() {
       await api.delete(`/api/orders/${id}`);
       setOrders((prev) => prev.filter((o) => o.id !== id));
     } catch (err) {
-      alert(err.response?.data?.error || 'Erreur lors de l\'annulation');
+      alert(err.response?.data?.error || "Erreur lors de l'annulation");
     } finally {
       setCancelling(null);
     }
   }
 
+  const active = orders.filter((o) => o.status !== 'served');
+  const history = orders.filter((o) => o.status === 'served');
+
   return (
     <div className="min-h-screen bg-white text-zinc-950">
       <Header />
 
-      <main className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-        <div className="mb-8 flex flex-wrap items-start justify-between gap-4">
-          <div>
-            <p className="text-xs font-bold uppercase tracking-[0.25em] text-violet-700">
-              Compte
-            </p>
-            <h1 className="mt-2 text-3xl font-black tracking-tight">
-              Bonjour, {user.identifier}
+      <div className="bg-zinc-950 text-white">
+        <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
+          <p className="text-xs font-bold uppercase tracking-[0.3em] text-violet-400">
+            Mon compte
+          </p>
+          <div className="mt-3 flex flex-wrap items-end justify-between gap-4">
+            <h1 className="text-4xl font-black tracking-tighter sm:text-5xl">
+              {user.identifier}
             </h1>
+            <button
+              onClick={logout}
+              className="text-sm text-zinc-500 transition hover:text-rose-400"
+            >
+              Déconnexion
+            </button>
           </div>
 
-          <button
-            onClick={logout}
-            className="rounded-full border border-zinc-200 px-4 py-2 text-sm font-medium transition hover:border-rose-200 hover:text-rose-600"
-          >
-            Déconnexion
-          </button>
-        </div>
-
-        <section>
-          <h2 className="mb-4 text-xl font-bold">Mes commandes</h2>
-
-          {loading && (
-            <p className="text-sm text-zinc-500">Chargement…</p>
-          )}
-
-          {!loading && orders.length === 0 && (
-            <div className="rounded-[2rem] border border-zinc-200 p-8 text-center">
-              <p className="text-zinc-500">Aucune commande pour l'instant.</p>
-              <Link
-                to="/#commande"
-                className="mt-4 inline-flex items-center justify-center rounded-2xl bg-violet-700 px-5 py-3 text-sm font-semibold text-white hover:bg-violet-800"
-              >
-                Commander
-              </Link>
-            </div>
-          )}
-
-          <div className="grid gap-4">
-            {orders.map((order) => (
-              <article
-                key={order.id}
-                className="rounded-[2rem] border border-zinc-200 p-5"
-              >
-                <div className="flex flex-wrap items-start justify-between gap-3">
-                  <div className="space-y-2">
-                    <div className="flex flex-wrap items-center gap-3">
-                      <h3 className="text-lg font-bold">{formatOrderId(order.id)}</h3>
-                      <span className={`rounded-full px-3 py-1 text-xs font-semibold ${STATUS_COLORS[order.status]}`}>
-                        {STATUS_LABELS[order.status]}
-                      </span>
-                    </div>
-                    <p className="text-sm text-zinc-600">{order.table_num}</p>
-                    <ul className="space-y-1">
-                      {order.items.map((item) => (
-                        <li key={item.id} className="text-sm text-zinc-700">
-                          {item.cocktail_name} × {item.quantity}
-                        </li>
-                      ))}
-                    </ul>
-                    <p className="text-xs text-zinc-400">
-                      {new Date(order.created_at).toLocaleDateString('fr-FR', {
-                        day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit',
-                      })}
-                    </p>
+          {!loading && active.length > 0 && (
+            <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {active.map((order) => (
+                <div
+                  key={order.id}
+                  className="rounded-2xl border border-white/10 bg-white/5 p-5"
+                >
+                  <div className="flex items-center gap-2">
+                    <span className={`h-2 w-2 rounded-full ${STATUS_DOT[order.status]}`} />
+                    <span className={`text-xs font-bold uppercase tracking-wider ${STATUS_COLORS[order.status]}`}>
+                      {STATUS_LABELS[order.status]}
+                    </span>
                   </div>
-
+                  <p className="mt-3 text-xl font-black tracking-tight">
+                    {formatOrderId(order.id)}
+                  </p>
+                  <p className="mt-1 text-sm text-zinc-400">{order.table_num}</p>
+                  <ul className="mt-3 space-y-1">
+                    {order.items.map((item) => (
+                      <li key={item.id} className="text-sm text-zinc-300">
+                        {item.cocktail_name} × {item.quantity}
+                      </li>
+                    ))}
+                  </ul>
                   {order.status === 'pending' && (
                     <button
                       onClick={() => cancelOrder(order.id)}
                       disabled={cancelling === order.id}
-                      className="rounded-full border border-rose-200 px-4 py-2 text-sm font-medium text-rose-600 transition hover:bg-rose-50 disabled:opacity-60"
+                      className="mt-4 text-xs text-rose-400 transition hover:text-rose-300 disabled:opacity-50"
                     >
                       {cancelling === order.id ? 'Annulation…' : 'Annuler'}
                     </button>
                   )}
                 </div>
-              </article>
-            ))}
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      <main className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+        {loading && <p className="text-sm text-zinc-400">Chargement…</p>}
+
+        {!loading && orders.length === 0 && (
+          <div className="py-16 text-center">
+            <p className="text-2xl font-black tracking-tight text-zinc-300">Aucune commande.</p>
+            <p className="mt-2 text-sm text-zinc-500">
+              Choisissez un cocktail et passez votre première commande.
+            </p>
+            <Link
+              to="/#commande"
+              className="mt-6 inline-flex items-center justify-center rounded-2xl bg-violet-700 px-6 py-3 text-sm font-semibold text-white hover:bg-violet-800"
+            >
+              Commander
+            </Link>
           </div>
-        </section>
+        )}
+
+        {!loading && history.length > 0 && (
+          <section>
+            <h2 className="text-xs font-bold uppercase tracking-[0.3em] text-zinc-400">
+              Historique
+            </h2>
+            <div className="mt-4 divide-y divide-zinc-100">
+              {history.map((order) => (
+                <div key={order.id} className="flex items-start justify-between gap-4 py-5">
+                  <div>
+                    <div className="flex items-center gap-3">
+                      <span className="font-bold">{formatOrderId(order.id)}</span>
+                      <span className="text-xs text-zinc-400">{order.table_num}</span>
+                    </div>
+                    <ul className="mt-1 flex flex-wrap gap-x-3">
+                      {order.items.map((item) => (
+                        <li key={item.id} className="text-sm text-zinc-500">
+                          {item.cocktail_name} × {item.quantity}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  <span className="shrink-0 text-xs text-zinc-400">{formatDate(order.created_at)}</span>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
       </main>
 
       <Footer />

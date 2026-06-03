@@ -1,34 +1,45 @@
-function HeroSection({ selectedCocktail }) {
-    return (
-        <section className="scroll-mt-20 bg-gradient-to-b from-violet-50 to-white">
-            <div className="mx-auto grid w-full max-w-7xl gap-8 px-4 py-10 sm:px-6 sm:py-14 lg:grid-cols-2 lg:items-center lg:px-8">
-                <div className="space-y-5">
-          <span className="inline-flex rounded-full bg-violet-100 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-violet-700">
-            Bienvenue chez Y'Pub.
-          </span>
+function HeroSection() {
+  return (
+    <section className="relative overflow-hidden bg-zinc-950">
+      <img
+        src="https://images.unsplash.com/photo-1551024709-8f23befc6f87?auto=format&fit=crop&w=1600&q=80"
+        alt=""
+        aria-hidden="true"
+        className="absolute inset-0 h-full w-full object-cover opacity-25 mix-blend-luminosity"
+      />
+      <div className="absolute inset-0 bg-gradient-to-b from-zinc-950/20 via-zinc-950/10 to-zinc-950" />
 
-                    <h1 className="text-4xl font-black tracking-tight text-zinc-950 sm:text-5xl">
-                        Consultez notre carte de boissons !
-                    </h1>
+      <div className="relative mx-auto max-w-7xl px-4 py-28 sm:px-6 sm:py-36 lg:px-8">
+        <p className="text-xs font-bold uppercase tracking-[0.35em] text-violet-400">
+          Y'Pub · Cocktails
+        </p>
 
-                    <div className="flex flex-col gap-3 sm:flex-row">
-                        <a
-                            href="#carte"
-                            className="inline-flex min-h-11 items-center justify-center rounded-2xl bg-violet-700 px-5 py-3 text-sm font-semibold text-white transition hover:bg-violet-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-700"
-                        >
-                            Voir la carte
-                        </a>
-                        <a
-                            href="#commande"
-                            className="inline-flex min-h-11 items-center justify-center rounded-2xl border border-zinc-300 bg-white px-5 py-3 text-sm font-semibold text-zinc-950 transition hover:border-violet-300 hover:bg-violet-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-700"
-                        >
-                            Commander
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </section>
-    );
+        <h1 className="mt-5 max-w-2xl text-5xl font-black leading-none tracking-tighter text-white sm:text-7xl">
+          Ce soir,{' '}
+          <span className="text-violet-400">commandez bien.</span>
+        </h1>
+
+        <p className="mt-6 max-w-md text-base leading-7 text-zinc-400">
+          Parcourez la carte, choisissez votre cocktail, et passez commande depuis votre table.
+        </p>
+
+        <div className="mt-10 flex flex-wrap gap-3">
+          <a
+            href="#carte"
+            className="inline-flex min-h-11 items-center justify-center rounded-2xl bg-violet-600 px-6 py-3 text-sm font-semibold text-white transition hover:bg-violet-500"
+          >
+            Voir la carte
+          </a>
+          <a
+            href="#commande"
+            className="inline-flex min-h-11 items-center justify-center rounded-2xl border border-white/10 px-6 py-3 text-sm font-semibold text-white transition hover:bg-white/5"
+          >
+            Commander
+          </a>
+        </div>
+      </div>
+    </section>
+  );
 }
 
 export default HeroSection;
