@@ -10,7 +10,7 @@ const cocktailSchema = z.object({
   description: z.string().optional().nullable(),
   available: z.boolean().default(true),
   origin: z.string().max(100).optional().nullable(),
-  image: z.string().url('URL d\'image invalide').optional().nullable(),
+  image: z.string().optional().nullable(),
   story: z.string().optional().nullable(),
   ingredients: z.array(z.string().min(1)).default([]),
 });

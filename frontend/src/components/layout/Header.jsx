@@ -37,43 +37,53 @@ function Header() {
             </li>
 
             {user ? (
-              <>
-                <li>
-                  <Link
-                    to="/profile"
-                    className="rounded-lg px-3 py-2 transition hover:text-zinc-950"
-                  >
-                    {user.identifier}
-                  </Link>
-                </li>
-                <li>
-                  <button
-                    onClick={logout}
-                    className="rounded-lg px-3 py-2 text-zinc-400 transition hover:text-rose-500"
-                  >
-                    Quitter
-                  </button>
-                </li>
-              </>
+                <>
+                  {['admin', 'staff'].includes(user.role) && (
+                      <li>
+                        <Link
+                            to="/admin"
+                            className="rounded-lg px-3 py-2 transition hover:text-violet-600 font-semibold"
+                        >
+                          Admin
+                        </Link>
+                      </li>
+                  )}
+                  <li>
+                    <Link
+                        to="/profile"
+                        className="rounded-lg px-3 py-2 transition hover:text-zinc-950"
+                    >
+                      {user.identifier}
+                    </Link>
+                  </li>
+                  <li>
+                    <button
+                        onClick={logout}
+                        className="rounded-lg px-3 py-2 text-zinc-400 transition hover:text-rose-500"
+                    >
+                      Quitter
+                    </button>
+                  </li>
+                </>
             ) : (
-              <>
-                <li>
-                  <Link
-                    to="/login"
-                    className="rounded-lg px-3 py-2 transition hover:text-zinc-950"
-                  >
-                    Connexion
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    to="/register"
-                    className="rounded-lg bg-zinc-950 px-4 py-2 text-white transition hover:bg-violet-700"
-                  >
-                    S'inscrire
-                  </Link>
-                </li>
-              </>
+                <>
+                  <li>
+                    <Link
+                        to="/login"
+                        className="rounded-lg px-3 py-2 transition hover:text-zinc-950"
+                    >
+                      Connexion
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                        to="/register"
+                        className="rounded-lg bg-zinc-950 px-4 py-2 text-white transition hover:bg-violet-700"
+                    >
+                      S'inscrire
+                    </Link>
+                  </li>
+                </>
             )}
           </ul>
         </nav>
