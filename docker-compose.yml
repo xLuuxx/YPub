@@ -1,0 +1,64 @@
+services:
+  db:
+    image: postgres:18-alpine
+    container_name: ypub-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: ypub
+    volumes:
+      - postgres_data:/var/lib/postgresql
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - ypub-network
+
+  backend:
+    build: ./backend
+    container_name: ypub-backend
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      PORT: 3000
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/ypub
+      JWT_SECRET: ${JWT_SECRET}
+      CORS_ORIGIN: http://localhost:5173
+      NODE_ENV: development
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    networks:
+      - ypub-network
+    command: npm run dev
+
+  frontend:
+    build: ./frontend
+    container_name: ypub-frontend
+    depends_on:
+      - backend
+    environment:
+      VITE_API_URL: http://localhost:3000
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend/src:/app/src
+      - ./frontend/public:/app/public
+    networks:
+      - ypub-network
+    command: npm run dev
+
+volumes:
+  postgres_data:
+
+networks:
+  ypub-network:
+    driver: bridge
